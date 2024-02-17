@@ -48,12 +48,25 @@ export const { auth, signIn, signOut } = NextAuth({
       // If user object is available, it means we're signing in
       if (user) {
         token.accessToken = (user as User).token; // Save the token to the JWT
+        token.id = (user as User).id; // Save the id to the JWT
+        token.email = (user as User).email; // Save the email to the JWT
+        token.first_name = (user as User).first_name; // Save the name to the JWT
+        token.last_name = (user as User).last_name; // Save the name to the JWT
+        token.is_active = (user as User).is_active; // Save the name to the JWT
+        token.user_type = (user as User).user_type; // Save the name to the JWT
+
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user && token.accessToken) {
         (session.user as any).accessToken = token.accessToken; // Use 'any' to bypass TypeScript's checks
+        (session.user as any).id = token.id; // Use 'any' to bypass TypeScript's checks
+        (session.user as any).email = token.email; // Use 'any' to bypass TypeScript's checks
+        (session.user as any).first_name = token.first_name; // Use 'any' to bypass TypeScript's checks
+        (session.user as any).last_name = token.last_name; // Use 'any' to bypass TypeScript's checks
+        (session.user as any).is_active = token.is_active; // Use 'any' to bypass TypeScript's checks
+        (session.user as any).user_type = token.user_type; // Use 'any' to bypass TypeScript's checks
       }
       return session;
     },
