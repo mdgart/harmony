@@ -18,4 +18,5 @@ export const authConfig = {
     },
   },
   providers: [], // Add providers with an empty array for now
+  secret: "6sVFWdEciBbWIt4giBnB5ljPVemKGXYF9wyt/AGH9s4=",
 } satisfies NextAuthConfig;
