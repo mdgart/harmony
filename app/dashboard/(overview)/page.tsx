@@ -9,6 +9,8 @@ import {
   LatestInvoicesSkeleton,
   CardsSkeleton,
 } from '@/app/ui/skeletons';
+import Search from '@/app/ui/search';
+import { auth } from '@/auth';
 
 export default async function Page() {
   const {
@@ -17,12 +19,15 @@ export default async function Page() {
     totalPaidInvoices,
     totalPendingInvoices,
   } = await fetchCardData();
-
+  const session = await auth();
   return (
     <main>
-      <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
-        Dashboard
+      <h1 className={`${lusitana.className} mb-2 text-xl md:text-2xl`}>
+        Welcome back, {session?.user?.email}!
       </h1>
+      <div className="mb-4 mt-2 flex items-center justify-between gap-2 md:mt-4">
+        <Search placeholder="Search Tours and Events..." />
+      </div>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <Suspense fallback={<CardsSkeleton />}>
           <CardWrapper />
