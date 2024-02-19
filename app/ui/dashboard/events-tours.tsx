@@ -1,40 +1,12 @@
 import { lusitana } from '@/app/ui/fonts';
-import { fetchRevenue } from '@/app/lib/data';
+import { fetchEvents } from '@/app/lib/data';
 import Search from '@/app/ui/search';
 
 export default async function EventsTours() {
   // Make component async, remove the props
-  // const revenue = await fetchRevenue(); // Fetch data inside the component
+  const events = await fetchEvents(); // Fetch data inside the component
 
-  type TableRow = {
-    name: string;
-    date: string;
-    type: string;
-    destination: string;
-  };
-
-  const tableData: TableRow[] = [
-    {
-      name: 'John Doe',
-      date: '2022-10-01',
-      type: 'Business',
-      destination: 'New York',
-    },
-    {
-      name: 'Jane Smith',
-      date: '2022-11-15',
-      type: 'Leisure',
-      destination: 'Paris',
-    },
-    {
-      name: 'William Johnson',
-      date: '2023-01-20',
-      type: 'Business',
-      destination: 'Tokyo',
-    },
-  ];
-
-  if (!tableData || tableData.length === 0) {
+  if (!events || events.length === 0) {
     return <p className="mt-4 text-gray-400">No data available.</p>;
   }
 
@@ -80,19 +52,19 @@ export default async function EventsTours() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {tableData.map((row, index) => (
+                  {events.map((row, index) => (
                     <tr key={index} className="[&:last-child>td]:rounded-b-lg">
-                      <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-500">
+                      <td className="px-2 py-2 text-sm text-gray-500">
                         {row.name}
                       </td>
                       <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-500">
-                        {row.date}
+                        {row.start_date}
                       </td>
                       <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-500">
                         {row.type}
                       </td>
                       <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-500">
-                        {row.destination}
+                        {row.destination.name}
                       </td>
                     </tr>
                   ))}

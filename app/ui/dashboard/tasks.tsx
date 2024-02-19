@@ -1,35 +1,11 @@
 import { lusitana } from '@/app/ui/fonts';
-import { fetchRevenue } from '@/app/lib/data';
+import { fetchTasks } from '@/app/lib/data';
 
 export default async function Tasks() {
   // Make component async, remove the props
-  //const revenue = await fetchRevenue(); // Fetch data inside the component
+  const tasks = await fetchTasks(); // Fetch data inside the component
 
-  type TableRow = {
-    name: string;
-    due: string;
-    assignee: string;
-  };
-
-  const tableData: TableRow[] = [
-    {
-      assignee: 'John Doe',
-      due: '2022-10-01',
-      name: 'Task one',
-    },
-    {
-      assignee: 'John Smith',
-      due: '2021-09-01',
-      name: 'Task two',
-    },
-    {
-      assignee: 'Julian Doe',
-      due: '2023-10-10',
-      name: 'Task three',
-    },
-  ];
-
-  if (!tableData || tableData.length === 0) {
+  if (!tasks || tasks.length === 0) {
     return <p className="mt-4 text-gray-400">No data available.</p>;
   }
 
@@ -66,16 +42,16 @@ export default async function Tasks() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {tableData.map((row, index) => (
+                  {tasks.map((row, index) => (
                     <tr key={index} className="[&:last-child>td]:rounded-b-lg">
                       <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                         {row.name}
                       </td>
                       <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                        {row.due}
+                        {row.due_date}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                        {row.assignee}
+                      <td className="px-3 py-2 text-sm text-gray-500">
+                        {row.assignees[0].name}
                       </td>
                     </tr>
                   ))}

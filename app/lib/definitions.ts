@@ -13,6 +13,67 @@ export type User = {
   token: string;
 };
 
+type Task = {
+  id: number;
+  name: string;
+  description: string;
+  due_date: string;
+  created_by: number;
+  attachments: null; // If attachments can have a specific type or structure, replace 'null' with that type
+  icon: string;
+  assignees: Assignee[];
+};
+
+type Assignee = {
+  id: number;
+  related_id: number;
+  type: string;
+  name: string;
+};
+
+export type Tasks = {
+  code: number;
+  message: string;
+  data: Task[];
+};
+
+export type Address = {
+  id: number;
+  street: string;
+  street_2: string;
+  city: string;
+  state: string;
+  zip_code: string;
+};
+
+export type Destination = {
+  id: number;
+  name: string;
+  description: string;
+  address: Address;
+};
+
+export type Event = {
+  id: number;
+  external_id: number;
+  name: string;
+  start_date: string; // Assuming dates are in 'YYYY-MM-DD' format
+  end_date: string; // Assuming dates are in 'YYYY-MM-DD' format
+  status: string;
+  type: string;
+  notes: string;
+  destination: Destination;
+  group_ids: number[] | null; // Assuming this is an array of numbers or null
+  tour_directors: number;
+};
+
+export type Events = {
+  code: number;
+  message: string;
+  data: Event[];
+};
+
+// NextJS Tutotial Objects
 export type Customer = {
   id: string;
   name: string;

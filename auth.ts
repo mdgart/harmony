@@ -17,7 +17,7 @@ export const { auth, signIn, signOut } = NextAuth({
         if (parsedCredentials.success) {
           const { email, password } = parsedCredentials.data;
           try {
-            const response = await axios.post('http://harmonystaging.composition9.com:8088/api/users/login', {
+            const response = await axios.post(process.env.HARMONY_URL+'/api/users/login', {
               email,
               password,
             }, {

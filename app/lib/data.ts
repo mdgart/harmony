@@ -7,10 +7,70 @@ import {
   LatestInvoiceRaw,
   User,
   Revenue,
+  Tasks,
+  Events
 } from './definitions';
 import { formatCurrency } from './utils';
 import { unstable_noStore as noStore } from 'next/cache';
+import { auth } from '@/auth';
+import axios from 'axios';
 
+export async function fetchTasks() {
+  noStore();
+  // Add noStore() here to prevent the response from being cached.
+  // This is equivalent to in fetch(..., {cache: 'no-store'}).
+  
+  try {
+      try {
+        const response = await axios.get<Tasks>(process.env.HARMONY_URL+'/api/tasks', {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        if (response.data.code === 200 && response.data.message === 'Got tasks') {
+          return response.data.data;
+        } else {
+          return null;
+        }
+      } catch (error) {
+        console.error('Failed to authenticate user:', error);
+        return null;
+      } 
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch tasks data.');
+  }
+}
+
+export async function fetchEvents() {
+  noStore();
+  // Add noStore() here to prevent the response from being cached.
+  // This is equivalent to in fetch(..., {cache: 'no-store'}).
+  
+  try {
+      try {
+        const response = await axios.get<Events>(process.env.HARMONY_URL+'/api/trips', {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        if (response.data.code === 200 && response.data.message === 'Got Experiences') {
+          return response.data.data;
+        } else {
+          return null;
+        }
+      } catch (error) {
+        console.error('Failed to authenticate user:', error);
+        return null;
+      } 
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch events data.');
+  }
+}
+
+// Tutorial Function 
+// TODO: delete when not used
 export async function fetchRevenue() {
   noStore();
   // Add noStore() here to prevent the response from being cached.
