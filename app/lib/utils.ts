@@ -1,5 +1,9 @@
 import { Revenue } from './definitions';
 
+export const stringToBoolean = (value: string | null) => {
+  return value === 'true';
+}
+
 export const formatCurrency = (amount: number) => {
   return (amount / 100).toLocaleString('en-US', {
     style: 'currency',

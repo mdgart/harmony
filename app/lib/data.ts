@@ -8,12 +8,21 @@ import {
   User,
   Revenue,
   Tasks,
-  Events
+  Events,
+  Announcements,
+  Announcement,
+  Groups,
+  GroupLeader,
+  GroupMember,
+  Group,
+  Event,
+  Task,
 } from './definitions';
 import { formatCurrency } from './utils';
 import { unstable_noStore as noStore } from 'next/cache';
-import { auth } from '@/auth';
-import axios from 'axios';
+import axiosWithAuth from './axiosWithAuth';
+
+const ITEMS_PER_PAGE = 6;
 
 export async function fetchTasks() {
   noStore();
@@ -22,7 +31,7 @@ export async function fetchTasks() {
   
   try {
       try {
-        const response = await axios.get<Tasks>(process.env.HARMONY_URL+'/api/tasks', {
+        const response = await axiosWithAuth.get<Tasks>(process.env.HARMONY_URL+'/api/tasks', {
           headers: {
             'Content-Type': 'application/json',
           },
@@ -49,7 +58,7 @@ export async function fetchEvents() {
   
   try {
       try {
-        const response = await axios.get<Events>(process.env.HARMONY_URL+'/api/trips', {
+        const response = await axiosWithAuth.get<Events>(process.env.HARMONY_URL+'/api/trips', {
           headers: {
             'Content-Type': 'application/json',
           },
@@ -68,6 +77,97 @@ export async function fetchEvents() {
     throw new Error('Failed to fetch events data.');
   }
 }
+
+
+export async function fetchAnnouncements() {
+  noStore();
+  // Add noStore() here to prevent the response from being cached.
+  // This is equivalent to in fetch(..., {cache: 'no-store'}).
+  
+  try {
+      try {
+        const response = await axiosWithAuth.get<Announcements>(process.env.HARMONY_URL+'/api/announcements', {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        if (response.data.code === 200 && response.data.message === 'Got Announcements') {
+          return response.data.data;
+        } else {
+          return null;
+        }
+      } catch (error) {
+        console.error('Failed to authenticate user:', error);
+        return null;
+      } 
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch events data.');
+  }
+}
+
+export async function fetchFilteredAnnouncements(
+  query: string,
+  currentPage: number,
+) {
+  noStore();
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    try {
+      const response = await axiosWithAuth.get<Announcements>(process.env.HARMONY_URL+'/api/announcements', {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log(response.data);
+      if (response.data.code === 200 && response.data.message === 'Got Posts') {
+        return response.data.data;
+      } else {
+        console.log('Failed to fetch announcements');
+        return null;
+      }
+    } catch (error) {
+      console.error('Failed to authenticate user:', error);
+      return null;
+    } 
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch events data.');
+  }
+}
+
+export async function fetchAnnouncementById(id: string) {
+  noStore();
+  try {
+    
+    try {
+      const response = await axiosWithAuth.get<Announcements>(process.env.HARMONY_URL+'/api/announcements/'+id, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.data.code === 200 && response.data.message === 'Got Post') {
+        return {
+          "id": (response.data.data as any).id,
+          "title": (response.data.data as any).title,
+          "content": (response.data.data as any).content,
+          "is_published": (response.data.data as any).is_published,
+        };
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error('Failed to authenticate user:', error);
+      return null;
+    }
+
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch announcement.');
+  }
+}
+
 
 // Tutorial Function 
 // TODO: delete when not used
@@ -151,7 +251,6 @@ export async function fetchCardData() {
   }
 }
 
-const ITEMS_PER_PAGE = 6;
 export async function fetchFilteredInvoices(
   query: string,
   currentPage: number,

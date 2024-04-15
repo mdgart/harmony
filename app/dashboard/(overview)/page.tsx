@@ -1,13 +1,8 @@
 import EventsTours from '@/app/ui/dashboard/events-tours';
 import Tasks from '@/app/ui/dashboard/tasks';
 import { lusitana } from '@/app/ui/fonts';
-import { fetchCardData } from '@/app/lib/data';
 import { Suspense } from 'react';
-import {
-  TableSkeleton,
-  RevenueChartSkeleton,
-  InvoiceSkeleton,
-} from '@/app/ui/skeletons';
+import { TableSkeleton } from '@/app/ui/skeletons';
 import Search from '@/app/ui/search';
 import { auth } from '@/auth';
 

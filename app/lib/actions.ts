@@ -1,116 +1,125 @@
 'use server';
 
 import { z } from 'zod';
-import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+import axiosWithAuth from './axiosWithAuth';
+import { stringToBoolean } from '@/app/lib/utils';
+import { auth } from '@/auth';
 
 const FormSchema = z.object({
   id: z.string(),
-  customerId: z.string({
-    invalid_type_error: 'Please select a customer.',
+  title: z.string({
+    invalid_type_error: 'Please input a valid title.',
   }),
-  amount: z.coerce.number().gt(0, { message: 'Please enter an amount greater than $0.' }),
-  status: z.enum(['pending', 'paid'], {
-    invalid_type_error: 'Please select an invoice status.',
+  is_published: z.boolean({
+    invalid_type_error: 'Please select a status.',
   }),
-  date: z.string(),
+  content: z.string({
+    invalid_type_error: 'Please input a valid content.',
+  }),
+  author: z.number({invalid_type_error: 'Please input a valid author.',})
 });
  
 export type State = {
   errors?: {
-    customerId?: string[];
-    amount?: string[];
-    status?: string[];
+    title?: string[];
+    is_published?: string[];
+    content?: string[];
+    author?: string[];
   };
   message?: string | null;
 };
 
-const CreateInvoice = FormSchema.omit({ id: true, date: true });
+const CreateAnnouncement = FormSchema.omit({ id: true });
 
-export async function createInvoice(prevState: State, formData: FormData) {
-    const validatedFields = CreateInvoice.safeParse({
-        customerId: formData.get('customerId'),
-        amount: formData.get('amount'),
-        status: formData.get('status'),
+export async function createAnnouncement(prevState: State, formData: FormData) {
+
+    const validatedFields = CreateAnnouncement.safeParse({
+        title: formData.get('title'),
+        content: formData.get('content'),
+        author: Number(formData.get('author')),
+        is_published: stringToBoolean(formData.get('is_published') as string),
     });
 
     if (!validatedFields.success) {
       return {
         errors: validatedFields.error.flatten().fieldErrors,
-        message: 'Missing Fields. Failed to Create Invoice.',
+        message: 'Missing Fields. Failed to Create Announcement.',
       };
     }
     
-    const { customerId, amount, status } = validatedFields.data;
-    const amountInCents = amount * 100;
-    const date = new Date().toISOString().split('T')[0];
+    const { title, is_published, content, author } = validatedFields.data;
 
     try {
-        await sql`
-            INSERT INTO invoices (customer_id, amount, status, date)
-            VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
-        `;
+      // create database entry
+      console.log(title);
+      const response = await axiosWithAuth.post('/api/announcements', {
+        title,
+        is_published,
+        content,
+        author,
+      });
     } catch (error) {
       return {
         status: 500,
-        message: 'Database Error: Failed to Create Invoice. ' + error,  
+        message: 'API Error: Failed to Create Announcement. ' + error,  
       };
       
     }
 
-  revalidatePath('/dashboard/invoices');
-  redirect('/dashboard/invoices');
+  revalidatePath('/dashboard/announcements');
+  redirect('/dashboard/announcements');
 }
 
-const UpdateInvoice = FormSchema.omit({ id: true, date: true });
+const UpdateAnnouncement = FormSchema.omit({ id: true, author: true });
 
-export async function updateInvoice(id: string, prevState: State, formData: FormData) {
-  const validatedFields =  UpdateInvoice.safeParse({
-    customerId: formData.get('customerId'),
-    amount: formData.get('amount'),
-    status: formData.get('status'),
+export async function updateAnnouncement(id: number, prevState: State, formData: FormData) {
+    const validatedFields = UpdateAnnouncement.safeParse({
+      title: formData.get('title'),
+      content: formData.get('content'),
+      is_published: stringToBoolean(formData.get('is_published') as string),
   });
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Create Invoice.',
+      message: 'Missing Fields. Failed to Create Announcement.',
     };
   }
-  const { customerId, amount, status } = validatedFields.data;
- 
-  const amountInCents = amount * 100;
-  
+  const { title, is_published, content } = validatedFields.data;
+
   try {
-    await sql`
-      UPDATE invoices
-      SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
-      WHERE id = ${id}
-    `;
+    // update database entry
+    const response = await axiosWithAuth.put('/api/announcements/'+id, {
+      title,
+      is_published,
+      content,
+    });
   }
   catch (error) {
     return {
       status: 500,
-      message: 'Database Error: Failed to Update Invoice. ' + error,
+      message: 'API Error: Failed to Update Announcement. ' + error,
     };
   }
  
-  revalidatePath('/dashboard/invoices');
-  redirect('/dashboard/invoices');
+  revalidatePath('/dashboard/announcements');
+  redirect('/dashboard/announcements');
 }
 
-export async function deleteInvoice(id: string) {
+export async function deleteAnnouncement(id: number) {
   try {
-    await sql`DELETE FROM invoices WHERE id = ${id}`;
+    // delete database entry
+    const response = await axiosWithAuth.delete('/api/announcements/'+id);
   } catch (error) {
     return {
       status: 500,
-      message: 'Database Error: Failed to Delete Invoice. ' + error,
+      message: 'Database Error: Failed to Delete Announcement. ' + error,
     };
   }
-  revalidatePath('/dashboard/invoices');
+  revalidatePath('/dashboard/announcements');
 }
 
 export async function authenticate(

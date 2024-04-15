@@ -1,7 +1,3 @@
-// This file contains type definitions for your data.
-// It describes the shape of the data, and what data type each property should accept.
-// For simplicity of teaching, we're manually defining these types.
-// However, these types are generated automatically if you're using an ORM such as Prisma.
 export type User = {
   id: string;
   first_name: string;
@@ -13,7 +9,7 @@ export type User = {
   token: string;
 };
 
-type Task = {
+export type Task = {
   id: number;
   name: string;
   description: string;
@@ -24,7 +20,7 @@ type Task = {
   assignees: Assignee[];
 };
 
-type Assignee = {
+export type Assignee = {
   id: number;
   related_id: number;
   type: string;
@@ -53,6 +49,50 @@ export type Destination = {
   address: Address;
 };
 
+export type Announcement = {
+  id: number;
+  title: string;
+  author: number;
+  content: string;
+  created_date: string; // Assuming dates are in 'YYYY-MM-DD' format
+  published_date: string; // Assuming dates are in 'YYYY-MM-DD' format
+  is_published: boolean;
+};
+
+export type Announcements = {
+  code: number;
+  message: string;
+  data: Announcement[];
+};
+
+export type GroupLeader = {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  group_id: number;
+};
+
+export type Group = {
+  id: number;
+  name: string;
+  notes: string;
+  ensemble_type: string;
+  performers: number;
+  non_performers: number;
+  on_the_road: boolean;
+  password: string;
+  group_leaders: GroupLeader[];
+  trips: Event[];
+};
+
+export type Groups = {
+  code: number;
+  message: string;
+  data: Group[];
+};
+
 export type Event = {
   id: number;
   external_id: number;
@@ -71,6 +111,21 @@ export type Events = {
   code: number;
   message: string;
   data: Event[];
+};
+
+export type GroupMember = {
+  group_id: number;
+  contact_ids: number[];
+  role: string;
+  performer_status: string;
+};
+
+export type AnnouncementForm = {
+  id: number;
+  title: string;
+  content: string;
+  author: number;
+  is_published: boolean;
 };
 
 // NextJS Tutotial Objects
