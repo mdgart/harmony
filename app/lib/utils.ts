@@ -71,3 +71,29 @@ export const generatePagination = (currentPage: number, totalPages: number) => {
     totalPages,
   ];
 };
+
+export function formatDateToUSFormat(string_date: string) {
+
+  const date = new Date(string_date);
+
+  // Get date components
+  const month = date.getMonth() + 1; // getMonth() returns 0-11
+  const day = date.getDate();
+  const year = date.getFullYear();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+
+  // Format the hours for AM/PM
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const formattedHours = hours % 12 || 12; // Convert 0 to 12 for 12AM
+
+  // Ensure two digits by adding leading zero if needed
+  const paddedMonth = String(month).padStart(2, '0');
+  const paddedDay = String(day).padStart(2, '0');
+  const paddedMinutes = String(minutes).padStart(2, '0');
+  const paddedSeconds = String(seconds).padStart(2, '0');
+
+  // Construct the formatted date string
+  return `${paddedMonth}/${paddedDay}/${year}, ${formattedHours}:${paddedMinutes}:${paddedSeconds} ${ampm}`;
+}

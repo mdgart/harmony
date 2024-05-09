@@ -22,7 +22,7 @@ import { formatCurrency } from './utils';
 import { unstable_noStore as noStore } from 'next/cache';
 import axiosWithAuth from './axiosWithAuth';
 
-const ITEMS_PER_PAGE = 6;
+export const ITEMS_PER_PAGE = 3;
 
 export async function fetchTasks() {
   noStore();
@@ -79,27 +79,30 @@ export async function fetchEvents() {
 }
 
 
-export async function fetchAnnouncements() {
+export async function fetchAnnouncementsPages(
+  query: string,
+) {
   noStore();
-  // Add noStore() here to prevent the response from being cached.
-  // This is equivalent to in fetch(..., {cache: 'no-store'}).
-  
+  const search_query = 'title='+query;
   try {
-      try {
-        const response = await axiosWithAuth.get<Announcements>(process.env.HARMONY_URL+'/api/announcements', {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        if (response.data.code === 200 && response.data.message === 'Got Announcements') {
-          return response.data.data;
-        } else {
-          return null;
-        }
-      } catch (error) {
-        console.error('Failed to authenticate user:', error);
+    try {
+      const response = await axiosWithAuth.get<Announcements>(process.env.HARMONY_URL+'/api/announcements?'+search_query, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log(query);
+      console.log(response.data.total_count);
+      if (response.data.code === 200 && response.data.message === 'Got Posts') {
+        return response.data.total_count;
+      } else {
+        console.log('Failed to fetch announcements');
         return null;
-      } 
+      }
+    } catch (error) {
+      console.error('Failed to authenticate user:', error);
+      return null;
+    } 
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch events data.');
@@ -111,15 +114,15 @@ export async function fetchFilteredAnnouncements(
   currentPage: number,
 ) {
   noStore();
-  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-
+  const search_query = 'title='+query;
   try {
     try {
-      const response = await axiosWithAuth.get<Announcements>(process.env.HARMONY_URL+'/api/announcements', {
+      const response = await axiosWithAuth.get<Announcements>(process.env.HARMONY_URL+'/api/announcements?pageSize='+ITEMS_PER_PAGE+'&page='+currentPage+'&'+search_query, {
         headers: {
           'Content-Type': 'application/json',
         },
       });
+      console.log(query);
       console.log(response.data);
       if (response.data.code === 200 && response.data.message === 'Got Posts') {
         return response.data.data;

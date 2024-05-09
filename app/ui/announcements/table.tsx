@@ -6,6 +6,7 @@ import {
 import AnnouncementStatus from '@/app/ui/announcements/status';
 import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
 import { fetchFilteredAnnouncements } from '@/app/lib/data';
+import { formatDateToUSFormat } from '@/app/lib/utils';
 
 export default async function AnnouncementsTable({
   query,
@@ -78,20 +79,18 @@ export default async function AnnouncementsTable({
                   key={announcement.id}
                   className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
                 >
-                  <td className="whitespace-nowrap px-3 py-3">
-                    {announcement.title}
-                  </td>
+                  <td className=" px-3 py-3">{announcement.title}</td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {announcement.author}
                   </td>
+                  <td className=" px-3 py-3">{announcement.content}</td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {announcement.content}
+                    {formatDateToUSFormat(announcement.created_date)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {announcement.created_date}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    {announcement.published_date}
+                    {announcement.is_published
+                      ? formatDateToUSFormat(announcement.published_date)
+                      : '-'}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     <AnnouncementStatus status={announcement.is_published} />

@@ -62,6 +62,7 @@ export type Announcement = {
 export type Announcements = {
   code: number;
   message: string;
+  total_count: number | 0;
   data: Announcement[];
 };
 
